@@ -12,7 +12,7 @@ def receive_data():
         timestamp = data.get('timestamp', None)
         if timestamp:
             # Convert timestamp to filename format
-            filename = f"{timestamp}.data"
+            filename = f"{timestamp}.json"
             # Save data to file
             with open(filename, 'w') as file:
                 json.dump(data, file)
@@ -39,6 +39,23 @@ def receive_screenshot():
         file.save(save_path)
         print(f"Screenshot received and saved to file: {save_path}")
         return "Screenshot received and saved successfully!", 200
+
+@app.route('/receive_file', methods=['POST'])
+def receive_file():
+    if 'file' not in request.files:
+        return "No file part in the request", 400
+    
+    file = request.files['file']
+    
+    if file.filename == '':
+        return "No selected file", 400
+    
+    if file:
+        filename = file.filename
+        save_path = os.path.join(os.getcwd(), filename)
+        file.save(save_path)
+        print(f"File received and saved to file: {save_path}")
+        return "File received and saved successfully!", 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
